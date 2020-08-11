@@ -1,0 +1,4 @@
+ext.retrofit_version = '2.7.0'
+ext.glide_version ='4.9.0'
+ext.android_support_version = '28.0.0'
+//ext.koin_version ='1.0.2'
