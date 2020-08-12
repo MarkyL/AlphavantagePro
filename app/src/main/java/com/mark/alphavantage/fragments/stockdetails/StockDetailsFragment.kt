@@ -1,4 +1,4 @@
-package com.mark.alphavantage.fragments.main
+package com.mark.alphavantage.fragments.stockdetails
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -8,27 +8,30 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.GridLayoutManager
 import com.mark.alphavantage.R
-import com.mark.alphavantage.activities.FragmentNavigator
 import com.mark.alphavantage.adapters.BaseAdapter
-import com.mark.alphavantage.adapters.StocksAdapter
-import com.mark.alphavantage.fragments.stockdetails.StockDetailsFragment
-import com.mark.alphavantage.model.StockModel
+import com.mark.alphavantage.adapters.StocksDetailsAdapter
+import com.mark.alphavantage.fragments.main.*
 import com.mark.alphavantage.mvvm.State
+import com.mark.alphavantage.network.model.responses.StockDetailsResponse
+import com.mark.alphavantage.utils.DateTimeHelper
 import com.mark.alphavantage.utils.Event
 import com.mark.alphavantage.utils.GridSpacingItemDecoration
 import kotlinx.android.synthetic.main.fragment_main.*
 import org.koin.androidx.viewmodel.ext.android.viewModel
 import timber.log.Timber
+import java.util.*
 
-class MainFragment : Fragment(), BaseAdapter.AdapterListener<StockModel> {
+class StockDetailsFragment : Fragment(), BaseAdapter.AdapterListener<StockDetailsResponse> {
 
-    private val viewModel by viewModel<MainViewModel>()
+    private val viewModel by viewModel<StockDetailsViewModel>()
 
-    private val stocksAdapter = StocksAdapter(listener = this)
+    private val stockDetailsAdapter = StocksDetailsAdapter(this)
+
+    private lateinit var symbol: String
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        return inflater.inflate(R.layout.fragment_main, container, false)
+        return inflater.inflate(R.layout.fragment_stock_details, container, false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -39,10 +42,13 @@ class MainFragment : Fragment(), BaseAdapter.AdapterListener<StockModel> {
         recyclerView.apply {
             layoutManager = GridLayoutManager(context, 2)
             addItemDecoration(GridSpacingItemDecoration(2, 30, true))
-            this.adapter = stocksAdapter
+//            this.adapter = stocksAdapter
         }
 
-        viewModel.dispatchInputEvent(GetStocks)
+        arguments?.let {
+            symbol = it.getString(SYMBOL, "")
+            viewModel.dispatchInputEvent(GetStockDetails(symbol))
+        }
     }
 
     private fun registerViewModel() {
@@ -62,25 +68,24 @@ class MainFragment : Fragment(), BaseAdapter.AdapterListener<StockModel> {
             })
     }
 
-    private fun handleNext(data: Event<MainDataState>?) {
+    private fun handleNext(data: Event<StockDetailsDataState>?) {
         data?.let { responseEvent ->
             if (!responseEvent.consumed) {
                 responseEvent.consume()?.let { response ->
                     when (response) {
-                        is GetStocksSuccess -> handleGetStocksSuccess(response.stocksList)
-                        is GetStocksFailureState -> TODO()
+                        is GetStockDetailsSuccess -> handleGetStockDetailsSuccess(response.stockDetailsResponse)
                     }
                 }
             }
         }
     }
 
-    private fun handleError(it: Throwable) {
+    private fun handleGetStockDetailsSuccess(stockDetailsResponse: StockDetailsResponse) {
+        Timber.i("handleGetStockDetailsSuccess with $stockDetailsResponse")
+
     }
 
-    private fun handleGetStocksSuccess(stocksList: List<StockModel>) {
-        Timber.i("handleGetStocksSuccess stocksList - $stocksList")
-        stocksAdapter.submitList(stocksList)
+    private fun handleError(it: Throwable) {
     }
 
     private fun showProgressView() {
@@ -91,12 +96,19 @@ class MainFragment : Fragment(), BaseAdapter.AdapterListener<StockModel> {
         progressBar.visibility = View.GONE
     }
 
-    override fun onItemClick(data: StockModel) {
-        Timber.i("onItemClick - $data")
+    companion object {
+        private const val SYMBOL = "symbol"
 
-        (activity as FragmentNavigator).navigateToStockDetails(data.stk)
-
+        fun newInstance(symbol: String): StockDetailsFragment {
+            val fragment = StockDetailsFragment()
+            val args = Bundle()
+            args.putString(SYMBOL, symbol)
+            fragment.arguments = args
+            return fragment
+        }
     }
 
-
+    override fun onItemClick(data: StockDetailsResponse) {
+        TODO("Not yet implemented")
+    }
 }

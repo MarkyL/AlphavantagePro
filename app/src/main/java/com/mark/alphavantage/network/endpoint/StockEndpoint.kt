@@ -1,9 +1,11 @@
 package com.mark.alphavantage.network.endpoint
 
+import com.google.gson.JsonObject
+import com.mark.alphavantage.network.model.responses.StockDetailsResponse
+
 class StockEndpoint constructor(private val stockService: StockService) {
 
-//    suspend fun login(phoneNumber: String, uuid: String): LoginResponse {
-//        return shareeService.login(LoginRequest(phoneNumber = phoneNumber, uuid = uuid))
-//    }
-
+    suspend fun getStockDetails(symbol: String): JsonObject {
+        return stockService.getStockDetails(symbol)
+    }
 }

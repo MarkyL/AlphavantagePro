@@ -5,6 +5,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.mark.alphavantage.utils.ItemAnimation
+import timber.log.Timber
 
 abstract class BaseAdapter<T> : RecyclerView.Adapter<RecyclerView.ViewHolder> {
 

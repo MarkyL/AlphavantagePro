@@ -9,7 +9,7 @@ import com.mark.alphavantage.utils.GlideApp
 import kotlinx.android.extensions.LayoutContainer
 import kotlinx.android.synthetic.main.stock_item.view.*
 
-class StocksAdapter : BaseAdapter<StockModel>() {
+class StocksAdapter(listener: AdapterListener<StockModel>) : BaseAdapter<StockModel>(listener) {
 
     override fun getLayoutId(position: Int, obj: StockModel): Int {
         return R.layout.stock_item
@@ -25,7 +25,7 @@ class StockViewHolder constructor(override val containerView: View) :
 
     override fun bind(data: StockModel) {
         containerView.stockNameTv.text = data.name
-        containerView.stockTickerTv.text = data.stk
+        containerView.symbolTv.text = data.stk
 
         GlideApp.with(containerView)
             .load(data.img)

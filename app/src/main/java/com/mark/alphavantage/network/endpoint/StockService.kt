@@ -1,11 +1,21 @@
 package com.mark.alphavantage.network.endpoint
 
+import com.google.gson.JsonObject
+import com.mark.alphavantage.network.model.requests.StockDetailsRequest
+import com.mark.alphavantage.network.model.responses.StockDetailsResponse
+import retrofit2.http.Body
+import retrofit2.http.GET
+import retrofit2.http.Path
+import retrofit2.http.Query
+
 interface StockService {
 
+    // https://www.alphavantage.co/query?function=TIME_SERIES_INTRADAY&symbol=JPM&interval=1min&apikey=Z8EW6CI3PHR9SUTK
     companion object {
-        const val PATIENT_BASE = "patient/"
+        const val STOCK_BASE = "query?function="
     }
 
-//    @POST(value = PATIENT_BASE + "login")
-//    suspend fun login(@Body loginRequest: LoginRequest): LoginResponse
+    @GET(value = STOCK_BASE + "TIME_SERIES_INTRADAY&interval=1min")
+    suspend fun getStockDetails(@Query("symbol") symbol: String): JsonObject
+
 }
