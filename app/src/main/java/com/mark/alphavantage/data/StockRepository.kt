@@ -13,7 +13,7 @@ class StockRepository constructor(remoteDataSource: StockRemoteDataSource) : Sto
     private var activeDataSource: StockDataSource = remoteDataSource
 //    private var activeDataSource: StockDataSource = mockDataSource
 
-    override suspend fun getStockDetails(symbol: String): JsonObject {
-        return activeDataSource.getStockDetails(symbol)
+    override suspend fun getStockDetails(symbol: String, interval: String): JsonObject {
+        return activeDataSource.getStockDetails(symbol, interval)
     }
 }

@@ -7,8 +7,8 @@ import com.mark.alphavantage.network.model.responses.StockDetailsResponse
 
 class StockRemoteDataSource constructor(private val endpoint: StockEndpoint) : StockDataSource {
 
-    override suspend fun getStockDetails(symbol: String): JsonObject {
-        return endpoint.getStockDetails(symbol)
+    override suspend fun getStockDetails(symbol: String, interval: String): JsonObject {
+        return endpoint.getStockDetails(symbol, interval)
     }
 
 }

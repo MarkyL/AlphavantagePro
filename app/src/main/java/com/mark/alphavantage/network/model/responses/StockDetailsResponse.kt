@@ -3,9 +3,10 @@ package com.mark.alphavantage.network.model.responses
 import com.google.gson.JsonObject
 import com.google.gson.annotations.SerializedName
 import com.mark.alphavantage.utils.DateTimeHelper
-import java.util.*
+import timber.log.Timber
+import java.lang.RuntimeException
+import java.text.DecimalFormat
 import kotlin.collections.ArrayList
-import kotlin.collections.HashMap
 
 
 class StockDetailsResponse(
@@ -16,16 +17,39 @@ class StockDetailsResponse(
     companion object {
         private const val META_DATA = "Meta Data"
         private const val TIME_SERIES_ONE = "Time Series (1min)"
+        private const val TIME_SERIES_FIVE = "Time Series (5min)"
+        private const val TIME_SERIES_FIFTEEN = "Time Series (15min)"
+        private const val TIME_SERIES_THIRTY = "Time Series (30min)"
+        private const val TIME_SERIES_SIXTY = "Time Series (60min)"
 
-        fun convertJsonToStockDetailsResponse(json: JsonObject): StockDetailsResponse {
-            val metaData = json.getAsJsonObject(META_DATA)
-            val stockMetaData = StockMetaData.convertJsonToStockMetaData(metaData)
+        fun convertJsonToStockDetailsResponse(json: JsonObject, timeInterval: TimeInterval): StockDetailsResponse {
+            try {
+                val metaData = json.getAsJsonObject(META_DATA)
+                val stockMetaData = StockMetaData.convertJsonToStockMetaData(metaData)
 
-            val stockTimeSeriesJson = json.getAsJsonObject(TIME_SERIES_ONE)
-            val stockTimeSeries = StockTimeSeries.convertJsonToStockTimeSeries(stockTimeSeriesJson)
+                val stockTimeSeriesJson = json.getAsJsonObject(timeInterval.type)
+                val stockTimeSeries =
+                    StockTimeSeries.convertJsonToStockTimeSeries(stockTimeSeriesJson)
 
-            return StockDetailsResponse(metaData = stockMetaData, stockTimeSeries = stockTimeSeries)
+                return StockDetailsResponse(
+                    metaData = stockMetaData,
+                    stockTimeSeries = stockTimeSeries
+                )
+            } catch (exception: RuntimeException) {
+                // Happens due to API allowing up to 5 requests per minute.
+                Timber.e("Failed convertJsonToStockDetailsResponse - $exception")
+                return StockDetailsResponse(StockMetaData(), StockTimeSeries())
+            }
         }
+    }
+
+    // 1min, 5min, 15min, 30min, 60min
+    enum class TimeInterval(val type: String, val typeName: String) {
+        ONE(TIME_SERIES_ONE, "1min"),
+        FIVE(TIME_SERIES_FIVE, "5min"),
+        FIFTEEN(TIME_SERIES_FIFTEEN, "15min"),
+        THIRTY(TIME_SERIES_THIRTY, "30min"),
+        SIXTY(TIME_SERIES_SIXTY, "60min")
     }
 }
 
@@ -59,14 +83,13 @@ class StockMetaData(
     }
 }
 
-class StockTimeSeries(val stockMap: ArrayList<StockData>) {
+class StockTimeSeries(val stockList: ArrayList<StockData> = arrayListOf()) {
 
     companion object {
         fun convertJsonToStockTimeSeries(json: JsonObject): StockTimeSeries {
             val keys = json.keySet()
             val stockList: ArrayList<StockData> = arrayListOf()
 
-            val cal = Calendar.getInstance()
             keys.forEach { key ->
                 val stockJson = json.getAsJsonObject(key)
 
@@ -104,13 +127,33 @@ class StockData(
             return StockData(
                 timeStamp = timeStamp,
                 date = date,
-                time = time,
-                open = json.get(OPEN).asString,
-                high = json.get(HIGH).asString,
-                low = json.get(LOW).asString,
-                close = json.get(CLOSE).asString,
-                volume = json.get(VOLUME).asString
-            )
+                time = formatTimeWithSeconds(time),
+                open = formatPrice(json.get(OPEN).asString),
+                high = formatPrice(json.get(HIGH).asString),
+                low = formatPrice(json.get(LOW).asString),
+                close = formatPrice(json.get(CLOSE).asString),
+                volume = formatPrice(json.get(VOLUME).asString))
+        }
+
+        /*
+        A function to format a time from "HH:MM:SS" format to "HH:MM" if seconds are meaningless.
+         */
+        private fun formatTimeWithSeconds(time: String): String {
+            val tokens = time.split(":")
+            if (tokens[2].isNotEmpty() && tokens[2] == "00") {
+                return tokens[0] + ":" + tokens[1]
+            }
+            return time
+        }
+
+        /*
+        A function to format a price string like "103.9300" to "103.93"
+        --> Deleting trailing zeroes.
+         */
+        private fun formatPrice(priceString: String): String {
+            val priceDouble = priceString.toDouble()
+            val decimalFormat = DecimalFormat("0.####")
+            return decimalFormat.format(priceDouble)
         }
     }
 }

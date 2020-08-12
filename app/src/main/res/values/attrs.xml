@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <declare-styleable name="StockDataView">
+        <attr name="title_text" format="string" />
+        <attr name="data_text" format="string" />
+    </declare-styleable>
+</resources>

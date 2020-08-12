@@ -8,12 +8,45 @@
     android:background="@android:color/white"
     >
 
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        app:layout_constraintTop_toTopOf="parent"
+        android:background="@color/colorPrimary"
+        app:titleTextColor="@android:color/white" />
+
+    <TextView
+        android:id="@+id/intervalTv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintLeft_toLeftOf="parent"
+
+        app:layout_constraintTop_toTopOf="@id/timeIntervalSelector"
+        app:layout_constraintBottom_toBottomOf="@id/timeIntervalSelector"
+        android:textSize="@dimen/regular_text_size_fixed"
+        android:text="@string/interval"/>
+
+    <Spinner
+        android:id="@+id/timeIntervalSelector"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@id/toolbar"
+        app:layout_constraintLeft_toRightOf="@id/intervalTv"
+        android:layout_marginLeft="@dimen/min_margin"
+        android:gravity="center"
+        android:padding="@dimen/min_margin"
+        android:spinnerMode="dropdown"
+        android:stateListAnimator="@drawable/spinner_sla"
+        />
+
+
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerView"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:layout_marginBottom="@dimen/min_margin"
-        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/timeIntervalSelector"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"

@@ -19,21 +19,21 @@ class StockDetailsViewModel constructor(application: Application, private val st
     override fun handleScreenEvents(event: StockDetailsDataEvent) {
         Timber.i("dispatchScreenEvent: ${event.javaClass.simpleName}")
         when(event) {
-            is GetStockDetails -> getStockDetails(event.symbol)
+            is GetStockDetails -> getStockDetails(event.symbol, event.timeInterval)
         }
     }
 
-    private fun getStockDetails(symbol: String) {
+    private fun getStockDetails(symbol: String, timeInterval: StockDetailsResponse.TimeInterval) {
         viewModelScope.launch {
             kotlin.runCatching {
-                Timber.i("getStockDetails - runCatching")
+                Timber.i("getStockDetails - runCatching with symbol = $symbol, interval = ${timeInterval.typeName}")
                 publish(state = State.LOADING)
-                stockRepository.getStockDetails(symbol)
+                stockRepository.getStockDetails(symbol, timeInterval.typeName)
             }.onSuccess {
                 Timber.i("getStockDetails - success")
                 publish(
                     state = State.NEXT,
-                    items = Event(GetStockDetailsSuccess(StockDetailsResponse.convertJsonToStockDetailsResponse(it))))
+                    items = Event(GetStockDetailsSuccess(StockDetailsResponse.convertJsonToStockDetailsResponse(it, timeInterval))))
             }.onFailure {
                 Timber.i("getStockDetails - failure ($it)")
                 publish(state = State.ERROR, throwable = it)
@@ -41,16 +41,11 @@ class StockDetailsViewModel constructor(application: Application, private val st
         }
     }
 
-    private fun convertJsonToStockDetailsResponse(jsonObject: JsonObject) {
-        val stockDetailsResponse =
-            StockDetailsResponse.convertJsonToStockDetailsResponse(jsonObject)
-    }
-
 }
 
 // Events = actions coming from UI
 sealed class StockDetailsDataEvent
-data class GetStockDetails(val symbol: String): StockDetailsDataEvent()
+data class GetStockDetails(val symbol: String, val timeInterval: StockDetailsResponse.TimeInterval): StockDetailsDataEvent()
 
 // States = returned back to UI
 sealed class StockDetailsDataState

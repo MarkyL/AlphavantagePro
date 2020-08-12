@@ -34,6 +34,8 @@ class MainFragment : Fragment(), BaseAdapter.AdapterListener<StockModel> {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        toolbar.title = "Alphavantage - Mark"
+
         registerViewModel()
 
         recyclerView.apply {

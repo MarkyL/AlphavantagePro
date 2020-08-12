@@ -8,7 +8,7 @@ import com.mark.alphavantage.network.model.responses.StockMetaData
 import com.mark.alphavantage.network.model.responses.StockTimeSeries
 
 class StockMockDataSource : StockDataSource {
-    override suspend fun getStockDetails(symbol: String): JsonObject {
+    override suspend fun getStockDetails(symbol: String, interval: String): JsonObject {
         return JsonObject() //StockDetailsResponse(StockMetaData(), "")//∂StockTimeSeries(listOf()))
     }
 }

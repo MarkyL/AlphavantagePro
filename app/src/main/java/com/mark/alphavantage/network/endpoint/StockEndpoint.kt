@@ -5,7 +5,7 @@ import com.mark.alphavantage.network.model.responses.StockDetailsResponse
 
 class StockEndpoint constructor(private val stockService: StockService) {
 
-    suspend fun getStockDetails(symbol: String): JsonObject {
-        return stockService.getStockDetails(symbol)
+    suspend fun getStockDetails(symbol: String, interval: String): JsonObject {
+        return stockService.getStockDetails(symbol, interval)
     }
 }

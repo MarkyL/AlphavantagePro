@@ -15,7 +15,7 @@ interface StockService {
         const val STOCK_BASE = "query?function="
     }
 
-    @GET(value = STOCK_BASE + "TIME_SERIES_INTRADAY&interval=1min")
-    suspend fun getStockDetails(@Query("symbol") symbol: String): JsonObject
+    @GET(value = STOCK_BASE + "TIME_SERIES_INTRADAY")
+    suspend fun getStockDetails(@Query("symbol") symbol: String, @Query("interval") interval: String): JsonObject
 
 }

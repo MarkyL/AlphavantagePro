@@ -8,5 +8,5 @@ import com.mark.alphavantage.network.model.responses.StockDetailsResponse
 interface StockDataSource {
 //    suspend fun temp(phoneNumber: String, uuid: String): LoginResponse
 
-    suspend fun getStockDetails(symbol: String) : JsonObject
+    suspend fun getStockDetails(symbol: String, interval: String) : JsonObject
 }

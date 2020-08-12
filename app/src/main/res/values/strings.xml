@@ -1,3 +1,14 @@
 <resources>
     <string name="app_name">Alphavantage</string>
+
+    <!-- StockDetails related -->
+    <string name="interval">Interval:</string>
+    <string name="time">Time:</string>
+    <string name="open">Open:</string>
+    <string name="close">Close:</string>
+    <string name="high">High:</string>
+    <string name="low">Low:</string>
+    <string name="volume">Volume:</string>
+
+
 </resources>
