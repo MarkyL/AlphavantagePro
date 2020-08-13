@@ -3,12 +3,13 @@ package com.mark.alphavantage.network.model.responses
 import com.google.gson.JsonObject
 import com.google.gson.annotations.SerializedName
 import com.mark.alphavantage.utils.DateTimeHelper
+import kotlinx.serialization.Serializable
 import timber.log.Timber
 import java.lang.RuntimeException
 import java.text.DecimalFormat
 import kotlin.collections.ArrayList
 
-
+@Serializable
 class StockDetailsResponse(
     @SerializedName(META_DATA) val metaData: StockMetaData,
     @SerializedName(TIME_SERIES_ONE) val stockTimeSeries: StockTimeSeries
@@ -53,6 +54,7 @@ class StockDetailsResponse(
     }
 }
 
+@Serializable
 class StockMetaData(
     @SerializedName(INFORMATION) val information: String = "",
     @SerializedName(SYMBOL) val symbol: String = "",
@@ -83,6 +85,7 @@ class StockMetaData(
     }
 }
 
+@Serializable
 class StockTimeSeries(val stockList: ArrayList<StockData> = arrayListOf()) {
 
     companion object {
@@ -107,6 +110,7 @@ class StockTimeSeries(val stockList: ArrayList<StockData> = arrayListOf()) {
     }
 }
 
+@Serializable
 class StockData(
     val timeStamp: Long,
     val time: String = "",

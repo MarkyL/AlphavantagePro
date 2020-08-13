@@ -93,6 +93,9 @@ dependencies {
         exclude group: 'org.json', module: 'json'
     }
 
+    // Library for various android charts
+    implementation 'com.github.PhilJay:MPAndroidChart:v3.1.0'
+
 }
 
 repositories {

@@ -40,6 +40,17 @@
         android:stateListAnimator="@drawable/spinner_sla"
         />
 
+    <Button
+        android:id="@+id/graphBtn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/graph"
+        app:layout_constraintTop_toTopOf="@id/timeIntervalSelector"
+        app:layout_constraintBottom_toBottomOf="@id/timeIntervalSelector"
+        app:layout_constraintRight_toRightOf="parent"
+        android:enabled="false"
+        android:layout_margin="@dimen/min_margin"/>
+
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerView"

@@ -12,6 +12,7 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.mark.alphavantage.R
+import com.mark.alphavantage.activities.FragmentNavigator
 import com.mark.alphavantage.adapters.BaseAdapter
 import com.mark.alphavantage.adapters.StocksDetailsAdapter
 import com.mark.alphavantage.mvvm.State
@@ -19,7 +20,6 @@ import com.mark.alphavantage.network.model.responses.StockData
 import com.mark.alphavantage.network.model.responses.StockDetailsResponse
 import com.mark.alphavantage.utils.Event
 import com.mark.alphavantage.utils.GridSpacingItemDecoration
-import kotlinx.android.synthetic.main.fragment_main.*
 import kotlinx.android.synthetic.main.fragment_main.progressBar
 import kotlinx.android.synthetic.main.fragment_main.recyclerView
 import kotlinx.android.synthetic.main.fragment_main.toolbar
@@ -145,6 +145,14 @@ class StockDetailsFragment : Fragment(), BaseAdapter.AdapterListener<StockData> 
             compareBy { it.timeStamp }
         )
         stockDetailsAdapter.submitList(stockDetailsResponse.stockTimeSeries.stockList)
+
+        graphBtn.setOnClickListener {
+            (activity as FragmentNavigator).navigateToStockGraph(
+                stockDetailsResponse.metaData.symbol,
+                stockDetailsResponse.stockTimeSeries.stockList
+            )
+        }
+        graphBtn.isEnabled = true
     }
 
     private fun handleError(it: Throwable) {
@@ -171,7 +179,7 @@ class StockDetailsFragment : Fragment(), BaseAdapter.AdapterListener<StockData> 
     }
 
     override fun onItemClick(data: StockData) {
-        TODO("Not yet implemented")
+
     }
 
 }
