@@ -1,11 +1,7 @@
 package com.mark.alphavantage.network.endpoint
 
 import com.google.gson.JsonObject
-import com.mark.alphavantage.network.model.requests.StockDetailsRequest
-import com.mark.alphavantage.network.model.responses.StockDetailsResponse
-import retrofit2.http.Body
 import retrofit2.http.GET
-import retrofit2.http.Path
 import retrofit2.http.Query
 
 interface StockService {
@@ -16,6 +12,9 @@ interface StockService {
     }
 
     @GET(value = STOCK_BASE + "TIME_SERIES_INTRADAY")
-    suspend fun getStockDetails(@Query("symbol") symbol: String, @Query("interval") interval: String): JsonObject
+    suspend fun getStockDetails(
+        @Query("symbol") symbol: String,
+        @Query("interval") interval: String
+    ): JsonObject
 
 }

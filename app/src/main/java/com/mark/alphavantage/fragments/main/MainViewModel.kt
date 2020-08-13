@@ -33,7 +33,8 @@ class MainViewModel constructor(application: Application)//, private val stockRe
                     Timber.i("getStocks - error loading stocks json.")
                     publish(state = State.ERROR, items = Event(GetStocksFailureState))
                 } else {
-                    val stocksList = parseStocksJson(stocksJson)
+                    val stocksList =
+                        parseStocksJson(stocksJson).sortedByDescending { it.priority.toInt() }
                     Timber.i("getStocks - success loading stocks json.")
                     publish(state = State.NEXT, items = Event(GetStocksSuccess(stocksList)))
                 }
@@ -50,7 +51,7 @@ class MainViewModel constructor(application: Application)//, private val stockRe
     private fun loadJSONFromAsset(context: Context): String? {
         var json: String? = null
         json = try {
-            val inputStream: InputStream = context.assets.open("stocks.json")
+            val inputStream: InputStream = context.assets.open(STOCKS_JSON)
             val size: Int = inputStream.available()
             val buffer = ByteArray(size)
             inputStream.read(buffer)
@@ -63,6 +64,9 @@ class MainViewModel constructor(application: Application)//, private val stockRe
         return json
     }
 
+    companion object {
+        private const val STOCKS_JSON = "stocks.json"
+    }
 }
 
 // Events = actions coming from UI

@@ -39,7 +39,6 @@ class MainFragment : Fragment(), BaseAdapter.AdapterListener<StockModel> {
         registerViewModel()
 
         recyclerView.apply {
-            layoutManager = GridLayoutManager(context, 2)
             addItemDecoration(GridSpacingItemDecoration(2, 30, true))
             this.adapter = stocksAdapter
         }
@@ -95,9 +94,7 @@ class MainFragment : Fragment(), BaseAdapter.AdapterListener<StockModel> {
 
     override fun onItemClick(data: StockModel) {
         Timber.i("onItemClick - $data")
-
         (activity as FragmentNavigator).navigateToStockDetails(data.stk)
-
     }
 
 

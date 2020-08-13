@@ -5,7 +5,6 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.mark.alphavantage.utils.ItemAnimation
-import timber.log.Timber
 
 abstract class BaseAdapter<T> : RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
@@ -35,7 +34,10 @@ abstract class BaseAdapter<T> : RecyclerView.Adapter<RecyclerView.ViewHolder> {
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
-        return getViewHolder(LayoutInflater.from(parent.context).inflate(viewType, parent, false), viewType)
+        return getViewHolder(
+            LayoutInflater.from(parent.context).inflate(viewType, parent, false),
+            viewType
+        )
     }
 
     @Suppress("UNCHECKED_CAST")
@@ -43,7 +45,8 @@ abstract class BaseAdapter<T> : RecyclerView.Adapter<RecyclerView.ViewHolder> {
         (holder as Binder<T>).bind(items[position])
 
         listener?.let { listener ->
-            holder.itemView.setOnClickListener { listener.onItemClick(items[position]) } }
+            holder.itemView.setOnClickListener { listener.onItemClick(items[position]) }
+        }
 
         setAnimation(holder.itemView, position)
     }
@@ -58,7 +61,7 @@ abstract class BaseAdapter<T> : RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     protected abstract fun getLayoutId(position: Int, obj: T): Int
 
-    abstract fun getViewHolder(view: View, viewType: Int):RecyclerView.ViewHolder
+    abstract fun getViewHolder(view: View, viewType: Int): RecyclerView.ViewHolder
 
     internal interface Binder<T> {
         fun bind(data: T)

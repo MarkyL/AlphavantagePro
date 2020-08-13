@@ -72,12 +72,12 @@ class StockMetaData(
 
         fun convertJsonToStockMetaData(json: JsonObject): StockMetaData {
             return StockMetaData(
-                information = json.get(INFORMATION).asString,
-                symbol = json.get(SYMBOL).asString,
-                lastRefreshed = json.get(LAST_REFRESHED).asString,
-                interval = json.get(INTERVAL).asString,
-                outputSize = json.get(OUTPUT_SIZE).asString,
-                timeZone = json.get(TIME_ZONE).asString
+                information = if (json.has(INFORMATION)) json.get(INFORMATION).asString else "",
+                symbol = if (json.has(SYMBOL)) json.get(SYMBOL).asString else "",
+                lastRefreshed = if (json.has(LAST_REFRESHED)) json.get(LAST_REFRESHED).asString else "",
+                interval = if (json.has(INTERVAL)) json.get(INTERVAL).asString else "",
+                outputSize = if (json.has(OUTPUT_SIZE)) json.get(OUTPUT_SIZE).asString else "",
+                timeZone = if (json.has(TIME_ZONE)) json.get(TIME_ZONE).asString else ""
             )
         }
     }
@@ -93,9 +93,11 @@ class StockTimeSeries(val stockList: ArrayList<StockData> = arrayListOf()) {
             keys.forEach { key ->
                 val stockJson = json.getAsJsonObject(key)
 
-                DateTimeHelper.getDateFormat(key)?.let {
-                    val split = key.split(" ")
-                    val stockData = StockData.convertJsonToStockData(stockJson, it, split[0], split[1])
+                DateTimeHelper.getDateFormat(key)?.let { timeStamp ->
+                    val dateTokens = key.split(" ")
+                    val stockData = StockData.convertJsonToStockData(
+                        stockJson,
+                        timeStamp = timeStamp, date = dateTokens[0], time = dateTokens[1])
                     stockList.add(stockData)
                 }
             }
@@ -128,19 +130,19 @@ class StockData(
                 timeStamp = timeStamp,
                 date = date,
                 time = formatTimeWithSeconds(time),
-                open = formatPrice(json.get(OPEN).asString),
-                high = formatPrice(json.get(HIGH).asString),
-                low = formatPrice(json.get(LOW).asString),
-                close = formatPrice(json.get(CLOSE).asString),
-                volume = formatPrice(json.get(VOLUME).asString))
+                open = if (json.has(OPEN)) formatPrice(json.get(OPEN).asString) else "",
+                high = if (json.has(HIGH)) formatPrice(json.get(HIGH).asString) else "",
+                low = if (json.has(LOW)) formatPrice(json.get(LOW).asString) else "",
+                close = if (json.has(CLOSE)) formatPrice(json.get(CLOSE).asString) else "",
+                volume = if (json.has(VOLUME)) formatPrice(json.get(VOLUME).asString) else "")
         }
 
         /*
-        A function to format a time from "HH:MM:SS" format to "HH:MM" if seconds are meaningless.
+        A function to format a time from "HH:mm:ss" format to "HH:mm" if seconds are meaningless.
          */
         private fun formatTimeWithSeconds(time: String): String {
             val tokens = time.split(":")
-            if (tokens[2].isNotEmpty() && tokens[2] == "00") {
+            if (tokens.size == 3 && tokens[2].isNotEmpty() && tokens[2] == "00") {
                 return tokens[0] + ":" + tokens[1]
             }
             return time
