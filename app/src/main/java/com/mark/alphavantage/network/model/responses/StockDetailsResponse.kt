@@ -4,10 +4,7 @@ import com.google.gson.JsonObject
 import com.google.gson.annotations.SerializedName
 import com.mark.alphavantage.utils.DateTimeHelper
 import kotlinx.serialization.Serializable
-import timber.log.Timber
-import java.lang.RuntimeException
 import java.text.DecimalFormat
-import kotlin.collections.ArrayList
 
 @Serializable
 class StockDetailsResponse(
@@ -23,24 +20,19 @@ class StockDetailsResponse(
         private const val TIME_SERIES_THIRTY = "Time Series (30min)"
         private const val TIME_SERIES_SIXTY = "Time Series (60min)"
 
+        @Throws(RuntimeException::class)
         fun convertJsonToStockDetailsResponse(json: JsonObject, timeInterval: TimeInterval): StockDetailsResponse {
-            try {
-                val metaData = json.getAsJsonObject(META_DATA)
-                val stockMetaData = StockMetaData.convertJsonToStockMetaData(metaData)
+            val metaData = json.getAsJsonObject(META_DATA)
+            val stockMetaData = StockMetaData.convertJsonToStockMetaData(metaData)
 
-                val stockTimeSeriesJson = json.getAsJsonObject(timeInterval.type)
-                val stockTimeSeries =
-                    StockTimeSeries.convertJsonToStockTimeSeries(stockTimeSeriesJson)
+            val stockTimeSeriesJson = json.getAsJsonObject(timeInterval.type)
+            val stockTimeSeries =
+                StockTimeSeries.convertJsonToStockTimeSeries(stockTimeSeriesJson)
 
-                return StockDetailsResponse(
-                    metaData = stockMetaData,
-                    stockTimeSeries = stockTimeSeries
-                )
-            } catch (exception: RuntimeException) {
-                // Happens due to API allowing up to 5 requests per minute.
-                Timber.e("Failed convertJsonToStockDetailsResponse - $exception")
-                return StockDetailsResponse(StockMetaData(), StockTimeSeries())
-            }
+            return StockDetailsResponse(
+                metaData = stockMetaData,
+                stockTimeSeries = stockTimeSeries
+            )
         }
     }
 

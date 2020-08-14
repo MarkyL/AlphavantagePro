@@ -9,9 +9,11 @@ import com.mark.alphavantage.mvvm.State
 import com.mark.alphavantage.network.model.responses.StockData
 import com.mark.alphavantage.network.model.responses.StockDetailsResponse
 import com.mark.alphavantage.network.model.responses.StockMetaData
+import com.mark.alphavantage.network.model.responses.StockTimeSeries
 import com.mark.alphavantage.utils.Event
 import kotlinx.coroutines.launch
 import timber.log.Timber
+import java.lang.RuntimeException
 
 class StockDetailsViewModel constructor(application: Application, private val stockRepository: StockRepository)
     : BaseViewModel<Event<StockDetailsDataState>, StockDetailsDataEvent>(application) {
@@ -31,9 +33,15 @@ class StockDetailsViewModel constructor(application: Application, private val st
                 stockRepository.getStockDetails(symbol, timeInterval.typeName)
             }.onSuccess {
                 Timber.i("getStockDetails - success")
-                publish(
-                    state = State.NEXT,
-                    items = Event(GetStockDetailsSuccess(StockDetailsResponse.convertJsonToStockDetailsResponse(it, timeInterval))))
+                try {
+                    publish(
+                        state = State.NEXT,
+                        items = Event(GetStockDetailsSuccess(StockDetailsResponse.convertJsonToStockDetailsResponse(it, timeInterval))))
+                }  catch (exception: RuntimeException) {
+                    // Happens due to API allowing up to 5 requests per minute.
+                    Timber.e("Failed convertJsonToStockDetailsResponse - $exception")
+                    publish(state = State.ERROR, throwable = Throwable(exception))
+                }
             }.onFailure {
                 Timber.i("getStockDetails - failure ($it)")
                 publish(state = State.ERROR, throwable = it)

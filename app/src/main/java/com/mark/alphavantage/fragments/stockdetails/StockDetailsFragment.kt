@@ -1,5 +1,7 @@
 package com.mark.alphavantage.fragments.stockdetails
 
+import android.app.AlertDialog
+import android.content.DialogInterface
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -8,6 +10,7 @@ import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import android.widget.TextView
 import androidx.core.content.ContextCompat
+import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -156,6 +159,11 @@ class StockDetailsFragment : Fragment(), BaseAdapter.AdapterListener<StockData> 
     }
 
     private fun handleError(it: Throwable) {
+        val dialog = AlertDialog.Builder(context)
+        dialog.setTitle("Error")
+        dialog.setMessage("Something went wrong, \nplease try again later.")
+        dialog.setPositiveButton("OK") { _, _ -> this@StockDetailsFragment.activity?.onBackPressed() }
+        dialog.show()
     }
 
     private fun showProgressView() {
